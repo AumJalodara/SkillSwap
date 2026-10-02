@@ -3,29 +3,26 @@
 ## Project Overview
 SkillSwap is a full-stack platform where students exchange knowledge and skills with each other using a non-monetary skill-credit system. Users can list skills they can teach, skills they want to learn, discover compatible students through a matching engine, schedule learning sessions, earn/spend skill credits, and rate completed sessions.
 
-## Current State / MVP Implementation
-The architectural foundation and core API for the MVP have been completely laid out based on the required specifications. 
+## Features Built
+- **User Authentication**: Secure JWT-based registration and login system.
+- **Skill Management**: Users can manage a personalized list of skills they can teach and skills they want to learn, with integrated proficiency levels.
+- **Reciprocal Matching Engine**: A matching engine that evaluates compatibility based on complementary skills, calculating a robust match score.
+- **Match Requests**: Users can discover recommended peers and send or accept match requests.
+- **Session Scheduling**: Accepted matches can be scheduled into learning sessions. The system tracks session states (REQUESTED, ACCEPTED, SCHEDULED, COMPLETED, CANCELLED).
+- **Skill Credits Ledger**: A robust transactional credit system with row-level locking to ensure atomic operations and prevent negative balances. Users earn credits by teaching and spend them by learning.
+- **Ratings & Reviews**: Post-session rating system with validation to ensure accountability and track user performance.
+- **Notifications**: Real-time tracking of requests, sessions, and credits to keep users informed.
+- **Dynamic Frontend**: A highly responsive, modern UI built with React, Vite, Tailwind CSS, and React Query for efficient data fetching and mutation.
 
-### Backend (FastAPI + PostgreSQL + SQLAlchemy)
-Located in `/backend`
-- **Models**: Built all SQLAlchemy models (`User`, `Skill`, `UserSkill`, `Match`, `Session`, `CreditTransaction`, `Rating`, `Notification`).
-- **Core Engine**: Implemented the reciprocal matching engine inside `backend/app/matching` (Matcher, Scoring algorithm).
-- **APIs**: Implemented routers for Authentication, Matches, Skills, Sessions, Credits, Ratings, and Notifications (`backend/app/api/v1/`).
-- **Migrations**: Alembic is initialized and configured to use the models.
+## Tech Stack
+- **Backend**: FastAPI, PostgreSQL, SQLAlchemy, Alembic (for migrations), Uvicorn.
+- **Frontend**: React, Vite, TypeScript, Tailwind CSS, React Query, React Router, Axios, Lucide React (for icons).
+- **DevOps**: Docker, Docker Compose.
 
-### Frontend (React + Vite + Tailwind CSS)
-Located in `/frontend`
-- **Setup**: Initialized a Vite + React + TypeScript project.
-- **Styling**: Configured Tailwind CSS.
-- **Routing**: Set up `react-router-dom` with a `MainLayout` and a beautiful `Home` landing page.
-
-### Docker
-- `docker-compose.yml` is at the root to spin up PostgreSQL, Redis, Backend, and Frontend.
-
-## How to Run the App (Once Docker is Installed)
+## How to Run the App (Docker)
 
 1. Make sure Docker and Docker Compose are installed on your machine.
-2. At the root of the project, run:
+2. At the root of the project, spin up the entire stack:
    ```bash
    docker compose up -d --build
    ```
@@ -33,10 +30,10 @@ Located in `/frontend`
    ```bash
    docker compose exec backend alembic upgrade head
    ```
-4. Access the applications:
+4. Seed the database with sample users, skills, and matches:
+   ```bash
+   docker compose exec backend python -m scripts.seed
+   ```
+5. Access the applications:
    - **Frontend**: http://localhost:5173
    - **Backend API Docs**: http://localhost:8000/docs
-
-## Note on Next Steps
-Currently, the backend has the foundational API routes and logic. The frontend has the landing page and routing setup. To complete the MVP from a user perspective:
-- Create the React components for Login, Register, Dashboard, and Match Discovery, hooking them up with `axios` and `react-query` to consume the FastAPI endpoints.

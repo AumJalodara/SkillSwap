@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Float
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Float, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -22,6 +22,10 @@ class Match(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    __table_args__ = (
+        CheckConstraint("user1_id != user2_id", name="ck_match_not_self"),
+    )
 
     # Relationships
     user1 = relationship("User", foreign_keys=[user1_id], back_populates="sent_matches")

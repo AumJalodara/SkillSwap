@@ -1,7 +1,7 @@
 import api from './api';
 
 export const authService = {
-  login: async (email, password) => {
+  login: async (email: string, password: string) => {
     const formData = new URLSearchParams();
     formData.append('username', email); // OAuth2 expects 'username'
     formData.append('password', password);
@@ -18,7 +18,7 @@ export const authService = {
     return response.data;
   },
   
-  register: async (userData) => {
+  register: async (userData: any) => {
     const response = await api.post('/auth/register', userData);
     return response.data;
   },

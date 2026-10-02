@@ -1,5 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NotificationsDropdown from '../components/NotificationsDropdown';
 
 export default function MainLayout() {
   const { isAuthenticated, logout } = useAuth();
@@ -25,6 +26,7 @@ export default function MainLayout() {
                   <Link to="/discover" className="text-slate-600 hover:text-indigo-600 font-medium">Discover</Link>
                   <Link to="/skills" className="text-slate-600 hover:text-indigo-600 font-medium">My Skills</Link>
                   <Link to="/sessions" className="text-slate-600 hover:text-indigo-600 font-medium">Sessions</Link>
+                  <Link to="/credits" className="text-slate-600 hover:text-indigo-600 font-medium">Credits</Link>
                 </nav>
               )}
             </div>
@@ -37,9 +39,13 @@ export default function MainLayout() {
                   </Link>
                 </>
               ) : (
-                <button onClick={handleLogout} className="text-slate-600 hover:text-red-600 font-medium">
-                  Logout
-                </button>
+                <>
+                  <NotificationsDropdown />
+                  <Link to="/profile" className="text-slate-600 hover:text-indigo-600 font-medium">Profile</Link>
+                  <button onClick={handleLogout} className="text-slate-600 hover:text-red-600 font-medium">
+                    Logout
+                  </button>
+                </>
               )}
             </div>
           </div>

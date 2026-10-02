@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { BookOpen, Star, Clock, Activity, Coins } from 'lucide-react';
@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: credits, isLoading: creditsLoading } = useQuery({
     queryKey: ['credits'],
@@ -41,7 +42,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending_matches'] });
-      queryClient.invalidateQueries({ queryKey: ['sessions'] }); // Because accept could change something or we should have sessions refresh
+      queryClient.invalidateQueries({ queryKey: ['sessions'] });
     }
   });
 

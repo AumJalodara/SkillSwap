@@ -24,7 +24,7 @@ export default function Skills() {
     }
   });
 
-  const { data: mySkills = [], isLoading: mySkillsLoading } = useQuery({
+  const { data: mySkills = [] } = useQuery({
     queryKey: ['my_skills'],
     queryFn: async () => {
       const res = await api.get('/skills/me');
@@ -153,10 +153,10 @@ export default function Skills() {
             Skills I Can Teach
           </h2>
           <div className="space-y-3">
-            {mySkills.filter(s => s.type === 'TEACH').length === 0 ? (
+            {mySkills.filter((s: any) => s.type === 'TEACH').length === 0 ? (
               <p className="text-slate-500 text-sm italic">You haven't added any teaching skills yet.</p>
             ) : (
-              mySkills.filter(s => s.type === 'TEACH').map((skill, idx) => (
+              mySkills.filter((s: any) => s.type === 'TEACH').map((skill: any, idx: number) => (
                 <div key={idx} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
                   <span className="font-medium text-slate-800">{skill.skill?.name || 'Unknown'}</span>
                   <button className="text-slate-400 hover:text-red-500 transition-colors">
@@ -173,10 +173,10 @@ export default function Skills() {
             Skills I Want to Learn
           </h2>
           <div className="space-y-3">
-            {mySkills.filter(s => s.type === 'LEARN').length === 0 ? (
+            {mySkills.filter((s: any) => s.type === 'LEARN').length === 0 ? (
               <p className="text-slate-500 text-sm italic">You haven't added any learning skills yet.</p>
             ) : (
-              mySkills.filter(s => s.type === 'LEARN').map((skill, idx) => (
+              mySkills.filter((s: any) => s.type === 'LEARN').map((skill: any, idx: number) => (
                 <div key={idx} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
                   <span className="font-medium text-slate-800">{skill.skill?.name || 'Unknown'}</span>
                   <button className="text-slate-400 hover:text-red-500 transition-colors">

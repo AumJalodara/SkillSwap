@@ -88,7 +88,7 @@ export default function Discover() {
                   <div>
                     <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">They can teach</h4>
                     <div className="flex flex-wrap gap-2">
-                      {match.teaches.map((skill: str, i: number) => (
+                      {match.teaches.map((skill: string, i: number) => (
                         <span key={i} className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-sm">{skill}</span>
                       ))}
                       {match.teaches.length === 0 && <span className="text-sm text-slate-400">None specified</span>}
@@ -98,7 +98,7 @@ export default function Discover() {
                   <div>
                     <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">They want to learn</h4>
                     <div className="flex flex-wrap gap-2">
-                      {match.wants.map((skill: str, i: number) => (
+                      {match.wants.map((skill: string, i: number) => (
                         <span key={i} className="bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-sm">{skill}</span>
                       ))}
                       {match.wants.length === 0 && <span className="text-sm text-slate-400">None specified</span>}

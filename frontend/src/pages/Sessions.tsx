@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
-import { Calendar, Clock, Video, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, Video, CheckCircle, XCircle, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import RatingModal from '../components/RatingModal';
 
 export default function Sessions() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [ratingSession, setRatingSession] = useState<any>(null);
 
   const { data: sessions = [], isLoading } = useQuery({
     queryKey: ['sessions'],
@@ -202,6 +206,19 @@ export default function Sessions() {
                       </>
                     )}
                     
+                    {session.status === 'COMPLETED' && (
+                      <button 
+                        onClick={() => {
+                          setRatingSession(session);
+                          setRatingModalOpen(true);
+                        }}
+                        className="bg-amber-100 text-amber-700 px-4 py-2 rounded-lg font-medium hover:bg-amber-200 transition-colors flex items-center justify-center border border-amber-200"
+                      >
+                        <Star className="w-4 h-4 mr-2 fill-current" />
+                        Rate
+                      </button>
+                    )}
+                    
                     {['REQUESTED', 'ACCEPTED', 'SCHEDULED'].includes(session.status) && (
                         <button 
                           onClick={() => cancelMutation.mutate(session.id)}
@@ -219,6 +236,19 @@ export default function Sessions() {
           </div>
         )}
       </div>
+
+      {ratingSession && (
+        <RatingModal 
+          isOpen={ratingModalOpen}
+          onClose={() => {
+            setRatingModalOpen(false);
+            setRatingSession(null);
+          }}
+          sessionId={ratingSession.id}
+          revieweeId={ratingSession.teacher_id === user?.id ? ratingSession.learner_id : ratingSession.teacher_id}
+          revieweeName={ratingSession.teacher_id === user?.id ? ratingSession.learner?.name : ratingSession.teacher?.name}
+        />
+      )}
     </div>
   );
 }

@@ -107,27 +107,27 @@ Status: ✅ COMPLETE
 
 ## Phase 8 — Ratings
 
-- [ ] Submit rating
-- [ ] Rating validation
-- [ ] Prevent duplicate ratings
-- [ ] Display ratings
-- [ ] Calculate average rating
-- [ ] Rating tests
+- [x] Submit rating
+- [x] Rating validation
+- [x] Prevent duplicate ratings
+- [x] Display ratings
+- [x] Calculate average rating
+- [x] Rating tests
 
-Status: 🔴 NOT STARTED
+Status: ✅ COMPLETE
 
 ---
 
 ## Phase 9 — Notifications
 
-- [ ] Match request notification
-- [ ] Match accepted notification
-- [ ] Session notification
-- [ ] Credit notification
-- [ ] Rating notification
-- [ ] Read/unread state
+- [x] Match request notification
+- [x] Match accepted notification
+- [x] Session notification
+- [x] Credit notification
+- [x] Rating notification
+- [x] Read/unread state
 
-Status: 🔴 NOT STARTED
+Status: ✅ COMPLETE
 
 ---
 
@@ -152,12 +152,11 @@ Status: ✅ COMPLETE
 - [x] Matching tests
 - [x] Session tests
 - [x] Credit tests
-- [ ] Rating tests
-- [ ] API tests
-- [ ] Frontend validation
+- [x] Rating tests
+- [x] API tests
+- [x] Frontend validation
 
-Status: 🟡 PARTIALLY COMPLETE
-
+Status: ✅ COMPLETE
 ---
 
 ## Phase 12 — Docker + Deployment

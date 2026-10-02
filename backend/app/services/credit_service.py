@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.credit import CreditTransaction, TransactionType
 from app.models.session import Session as DbSession
+from app.models.user import User
 from fastapi import HTTPException
 
 def get_user_balance(db: Session, user_id: int) -> int:
@@ -44,6 +45,9 @@ def transfer_credits_for_session(db: Session, session: DbSession):
 
     # Assuming cost is 1 credit. You can adjust based on duration.
     cost = 1
+
+    # Lock learner user row to prevent concurrent overspending
+    db.query(User).filter(User.id == session.learner_id).with_for_update().first()
 
     # Check learner balance
     learner_balance = get_user_balance(db, session.learner_id)
