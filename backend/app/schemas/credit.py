@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 from app.models.credit import TransactionType
@@ -13,12 +13,12 @@ class CreditTransactionCreate(CreditTransactionBase):
     user_id: int
 
 class CreditTransactionResponse(CreditTransactionBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: int
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 class CreditBalanceResponse(BaseModel):
     balance: int
+

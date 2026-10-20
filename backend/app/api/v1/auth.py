@@ -42,8 +42,20 @@ def login_access_token(
         "token_type": "bearer",
     }
 
+from app.schemas.user import UserCreate, UserResponse, UserUpdate, Token
+from app.api.v1.users import update_user_profile
+
 @router.get("/me", response_model=UserResponse)
 def read_current_user(
     current_user: User = Depends(deps.get_current_active_user),
 ):
     return current_user
+
+@router.patch("/me", response_model=UserResponse)
+def update_auth_user(
+    user_in: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+):
+    return update_user_profile(current_user, user_in, db)
+

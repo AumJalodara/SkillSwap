@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 from app.models.session import SessionStatus
@@ -22,6 +22,8 @@ class SessionUpdate(BaseModel):
     meeting_link: Optional[str] = None
 
 class SessionResponse(SessionBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     status: SessionStatus
     meeting_link: Optional[str] = None
@@ -32,5 +34,3 @@ class SessionResponse(SessionBase):
     learner: UserResponse
     skill: SkillResponse
 
-    class Config:
-        from_attributes = True

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/auth';
 
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       if (localStorage.getItem('token')) {
         const userData = await authService.getCurrentUser();
@@ -31,16 +31,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUser(null);
       }
-    } catch (error) {
+    } catch {
       setUser(null);
       localStorage.removeItem('token');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    checkAuth();
+    let active = true;
+    const initialize = async () => {
+      try {
+        if (localStorage.getItem('token')) {
+          const userData = await authService.getCurrentUser();
+          if (active) setUser(userData);
+        } else {
+          if (active) setUser(null);
+        }
+      } catch {
+        if (active) {
+          setUser(null);
+          localStorage.removeItem('token');
+        }
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    };
+
+    initialize();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const logout = () => {
@@ -55,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// oxlint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

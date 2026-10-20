@@ -2,6 +2,8 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotificationsDropdown from '../components/NotificationsDropdown';
 
+const currentYear = new Date().getFullYear();
+
 export default function MainLayout() {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
@@ -58,7 +60,7 @@ export default function MainLayout() {
 
       <footer className="bg-slate-50 border-t border-slate-200 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-500">
-          &copy; {new Date().getFullYear()} SkillSwap. All rights reserved.
+          &copy; {currentYear} SkillSwap. All rights reserved.
         </div>
       </footer>
     </div>

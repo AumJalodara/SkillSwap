@@ -4,7 +4,7 @@ from app.models.credit import CreditTransaction, TransactionType
 from app.models.match import Match, MatchStatus
 from app.models.user import User
 from app.core.security import get_password_hash
-from app.models.skill import Skill
+from app.models.skill import Skill, UserSkill, SkillType
 
 import uuid
 @pytest.fixture
@@ -25,6 +25,11 @@ def test_users_and_skill(db):
 
     skill = Skill(name=f"Python {uid}", category="PROGRAMMING")
     db.add(skill)
+    db.commit()
+    db.refresh(skill)
+
+    user_skill = UserSkill(user_id=teacher.id, skill_id=skill.id, type=SkillType.TEACH, proficiency=4)
+    db.add(user_skill)
     db.commit()
     
     match = Match(user1_id=teacher.id, user2_id=learner.id, status=MatchStatus.ACCEPTED, match_score=90.0)

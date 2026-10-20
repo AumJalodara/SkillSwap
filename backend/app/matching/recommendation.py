@@ -21,6 +21,10 @@ def get_recommendations(db: Session, current_user_id: int) -> List[Dict[str, Any
         
         # Only recommend if there is some compatibility (score > 30)
         if score > 30:
+            from app.models.rating import Rating
+            ratings = db.query(Rating.rating).filter(Rating.reviewee_id == candidate.id).all()
+            avg_rating = round(sum(r[0] for r in ratings) / len(ratings), 1) if ratings else None
+
             recommendations.append({
                 "user_id": candidate.id,
                 "name": candidate.name,
@@ -28,7 +32,9 @@ def get_recommendations(db: Session, current_user_id: int) -> List[Dict[str, Any
                 "match_score": score,
                 "reasons": reasons,
                 "teaches": [s.skill.name for s in candidate_teaching],
-                "wants": [s.skill.name for s in candidate_learning]
+                "wants": [s.skill.name for s in candidate_learning],
+                "average_rating": avg_rating,
+                "ratings_count": len(ratings)
             })
             
     # Sort by highest score

@@ -29,6 +29,15 @@ def create_rating(
     # Check if user was in session
     if current_user.id not in [session.teacher_id, session.learner_id]:
         raise HTTPException(status_code=403, detail="Not a participant in this session")
+
+    # Prevent self-rating
+    if rating_in.reviewee_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot rate yourself")
+
+    # Validate reviewee is the other participant in this session
+    expected_reviewee_id = session.learner_id if current_user.id == session.teacher_id else session.teacher_id
+    if rating_in.reviewee_id != expected_reviewee_id:
+        raise HTTPException(status_code=400, detail="Reviewee must be the other participant in this session")
         
     # Check if already rated
     existing_rating = db.query(Rating).filter(
@@ -47,6 +56,18 @@ def create_rating(
         review=rating_in.review
     )
     db.add(db_rating)
+
+    # Emit notification to reviewee
+    from app.services.notification_service import create_notification
+    create_notification(
+        db,
+        user_id=rating_in.reviewee_id,
+        title="New Rating Received",
+        message=f"{current_user.name} rated your session {rating_in.rating}/5 stars.",
+        notification_type="RATING",
+        commit=False
+    )
+
     db.commit()
     db.refresh(db_rating)
     return db_rating

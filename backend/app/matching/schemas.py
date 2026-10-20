@@ -9,3 +9,5 @@ class RecommendationResponse(BaseModel):
     reasons: List[str]
     teaches: List[str]
     wants: List[str]
+    average_rating: float | None = None
+    ratings_count: int = 0

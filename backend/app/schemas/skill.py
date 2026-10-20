@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 from app.models.skill import SkillType
@@ -12,11 +12,10 @@ class SkillCreate(SkillBase):
     pass
 
 class SkillResponse(SkillBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 class UserSkillBase(BaseModel):
     skill_id: int
@@ -28,10 +27,10 @@ class UserSkillCreate(UserSkillBase):
     pass
 
 class UserSkillResponse(UserSkillBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: int
     created_at: datetime
     skill: SkillResponse
-    
-    class Config:
-        from_attributes = True
+

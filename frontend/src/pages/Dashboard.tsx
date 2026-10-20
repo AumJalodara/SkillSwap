@@ -43,6 +43,17 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending_matches'] });
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['accepted_matches'] });
+    }
+  });
+
+  const rejectMatchMutation = useMutation({
+    mutationFn: async (matchId: number) => {
+      const res = await api.patch(`/matches/${matchId}/reject`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pending_matches'] });
     }
   });
 
@@ -106,13 +117,22 @@ export default function Dashboard() {
                       <h3 className="font-bold text-slate-900">{match.user1.name}</h3>
                       <p className="text-sm text-slate-500">Wants to match with you!</p>
                     </div>
-                    <button 
-                      onClick={() => acceptMatchMutation.mutate(match.id)}
-                      disabled={acceptMatchMutation.isPending}
-                      className="bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-600 transition-colors"
-                    >
-                      Accept Match
-                    </button>
+                    <div className="flex items-center space-x-2">
+                      <button 
+                        onClick={() => acceptMatchMutation.mutate(match.id)}
+                        disabled={acceptMatchMutation.isPending || rejectMatchMutation.isPending}
+                        className="bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                      >
+                        Accept Match
+                      </button>
+                      <button 
+                        onClick={() => rejectMatchMutation.mutate(match.id)}
+                        disabled={acceptMatchMutation.isPending || rejectMatchMutation.isPending}
+                        className="bg-rose-50 text-rose-600 border border-rose-200 px-4 py-2 rounded-lg font-medium hover:bg-rose-100 transition-colors disabled:opacity-50"
+                      >
+                        Decline
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

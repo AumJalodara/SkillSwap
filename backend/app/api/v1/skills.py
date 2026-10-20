@@ -32,6 +32,7 @@ def get_my_skills(
     return db.query(UserSkill).filter(UserSkill.user_id == current_user.id).all()
 
 @router.post("/me", response_model=UserSkillResponse)
+@router.post("/user", response_model=UserSkillResponse, include_in_schema=False)
 def add_user_skill(
     user_skill_in: UserSkillCreate,
     db: Session = Depends(get_db),
@@ -61,6 +62,31 @@ def add_user_skill(
     db.commit()
     db.refresh(new_user_skill)
     return new_user_skill
+
+@router.delete("/me/{user_skill_id}")
+def delete_user_skill(
+    user_skill_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+):
+    user_skill = db.query(UserSkill).filter(
+        UserSkill.id == user_skill_id,
+        UserSkill.user_id == current_user.id
+    ).first()
+
+    # Fallback to match by skill_id if user_skill_id was not the row id
+    if not user_skill:
+        user_skill = db.query(UserSkill).filter(
+            UserSkill.skill_id == user_skill_id,
+            UserSkill.user_id == current_user.id
+        ).first()
+
+    if not user_skill:
+        raise HTTPException(status_code=404, detail="User skill association not found")
+
+    db.delete(user_skill)
+    db.commit()
+    return {"message": "Skill association removed successfully", "id": user_skill.id}
 
 from app.schemas.ai import SkillExtractionRequest, SkillExtractionResponse
 from app.services.ai_service import extract_skills_from_text

@@ -4,12 +4,18 @@ import api from '../services/api';
 import { Calendar, Clock, Video, CheckCircle, XCircle, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import RatingModal from '../components/RatingModal';
+import ScheduleModal from '../components/ScheduleModal';
+import RequestSessionModal from '../components/RequestSessionModal';
 
 export default function Sessions() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [ratingSession, setRatingSession] = useState<any>(null);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [activeScheduleSession, setActiveScheduleSession] = useState<any>(null);
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [activeMatch, setActiveMatch] = useState<any>(null);
 
   const { data: sessions = [], isLoading } = useQuery({
     queryKey: ['sessions'],
@@ -24,16 +30,6 @@ export default function Sessions() {
     queryFn: async () => {
       const res = await api.get('/matches/accepted');
       return res.data;
-    }
-  });
-
-  const createSessionMutation = useMutation({
-    mutationFn: async (data: { match_id: number, teacher_id: number, learner_id: number, skill_id: number }) => {
-      const res = await api.post('/sessions', data);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] });
     }
   });
 
@@ -54,7 +50,7 @@ export default function Sessions() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['credits'] }); // Refresh credits in case
+      queryClient.invalidateQueries({ queryKey: ['credits'] });
     }
   });
 
@@ -95,19 +91,9 @@ export default function Sessions() {
                   </div>
                   <button 
                     onClick={() => {
-                      // In a real app we'd open a modal to select the specific skill. 
-                      // For MVP, we'll just send a dummy skill_id or assume the teacher/learner roles.
-                      // Let's assume user1 is the teacher and user2 is the learner.
-                      const teacherId = match.user1_id;
-                      const learnerId = match.user2_id;
-                      createSessionMutation.mutate({
-                        match_id: match.id,
-                        teacher_id: teacherId,
-                        learner_id: learnerId,
-                        skill_id: 1 // Dummy skill id for MVP flow, or we could look it up
-                      });
+                      setActiveMatch(match);
+                      setRequestModalOpen(true);
                     }}
-                    disabled={createSessionMutation.isPending}
                     className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
                   >
                     Request Session
@@ -158,7 +144,7 @@ export default function Sessions() {
                         {session.scheduled_at && (
                           <div className="flex items-center text-indigo-600 font-medium">
                             <Calendar className="w-4 h-4 mr-1" />
-                            {new Date(session.scheduled_at).toLocaleDateString()}
+                            {new Date(session.scheduled_at).toLocaleDateString()} {new Date(session.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         )}
                         <div className="flex items-center">
@@ -181,7 +167,13 @@ export default function Sessions() {
                     )}
                     
                     {session.status === 'ACCEPTED' && (
-                      <button className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors flex items-center justify-center">
+                      <button 
+                        onClick={() => {
+                          setActiveScheduleSession(session);
+                          setScheduleModalOpen(true);
+                        }}
+                        className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors flex items-center justify-center shadow-sm"
+                      >
                         <Calendar className="w-4 h-4 mr-2 text-indigo-500" />
                         Schedule
                       </button>
@@ -195,6 +187,16 @@ export default function Sessions() {
                             Join Call
                           </a>
                         )}
+                        <button 
+                          onClick={() => {
+                            setActiveScheduleSession(session);
+                            setScheduleModalOpen(true);
+                          }}
+                          className="bg-white border border-slate-200 text-slate-700 px-3 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors flex items-center justify-center"
+                          title="Reschedule session"
+                        >
+                          <Calendar className="w-4 h-4 text-indigo-500" />
+                        </button>
                         <button 
                           onClick={() => completeMutation.mutate(session.id)}
                           disabled={completeMutation.isPending}
@@ -237,6 +239,29 @@ export default function Sessions() {
         )}
       </div>
 
+      {scheduleModalOpen && (
+        <ScheduleModal
+          isOpen={scheduleModalOpen}
+          onClose={() => {
+            setScheduleModalOpen(false);
+            setActiveScheduleSession(null);
+          }}
+          session={activeScheduleSession}
+        />
+      )}
+
+      {requestModalOpen && (
+        <RequestSessionModal
+          isOpen={requestModalOpen}
+          onClose={() => {
+            setRequestModalOpen(false);
+            setActiveMatch(null);
+          }}
+          match={activeMatch}
+          currentUserId={user?.id}
+        />
+      )}
+
       {ratingSession && (
         <RatingModal 
           isOpen={ratingModalOpen}
@@ -252,3 +277,4 @@ export default function Sessions() {
     </div>
   );
 }
+

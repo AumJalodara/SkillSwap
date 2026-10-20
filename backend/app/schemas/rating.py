@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -12,9 +12,9 @@ class RatingCreate(RatingBase):
     pass
 
 class RatingResponse(RatingBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     reviewer_id: int
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
+
