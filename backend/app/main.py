@@ -1,13 +1,28 @@
+import logging
+import time
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import Base, engine
 
+logger = logging.getLogger(__name__)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Ensure all database tables exist on startup
-    Base.metadata.create_all(bind=engine)
+    # Ensure all database tables exist on startup with retry for managed cloud DBs
+    retries = 5
+    for attempt in range(retries):
+        try:
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database tables initialized successfully.")
+            break
+        except Exception as e:
+            if attempt < retries - 1:
+                logger.warning(f"Database connection attempt {attempt + 1} failed: {e}. Retrying in 2 seconds...")
+                time.sleep(2)
+            else:
+                logger.error(f"Failed to initialize database tables after {retries} attempts: {e}")
     yield
 
 app = FastAPI(
