@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./skillswap.db"
     REDIS_URL: str = "redis://localhost:6379/0"
     GROQ_API_KEY: str | None = None
+    FRONTEND_URL: str = "http://localhost:5173"
 
 settings = Settings()
 
