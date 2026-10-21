@@ -21,6 +21,19 @@ def test_register_user(client, db):
     balance = get_user_balance(db, data["id"])
     assert balance == 2
 
+def test_register_with_full_name_alias(client):
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "full_name": "Alias User",
+            "email": "alias@example.com",
+            "password": "newpassword123"
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "Alias User"
+
 def test_register_existing_user(client, test_user):
     response = client.post(
         "/api/v1/auth/register",
